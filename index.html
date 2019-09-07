@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script src="https://code.jquery.com/jquery-2.1.0.js"></script>
+
+    <canvas id="canvas" width="500" height="500"></canvas>
+
+    <script>
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+        var width = canvas.width;
+        var height = canvas.height;
+
+        const colors = ['#2185C5', '#7ECEFD', '#FF7F66']
+    
+        var ballUp = 0;
+
+        var bottom = height;
+
+        var direction = 0
+
+        var Ball = function(){
+            this.x = width / 2;
+            this.y = height / 2;
+            this.speedX = 0;
+            this.speedY = 1;
+            this.radius = 5
+        }
+
+        var Block = function(){
+            this.x = 200;
+            this.y = 300;    
+            this.width = 100
+            this.height = 10    
+        }
+    
+        var circle = function (x, y, radius, filin) {
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, Math.PI * 2, false);
+                if (filin) {
+                    ctx.fill();
+                } else {
+                    ctx.stroke();
+                }
+            }
+
+        var drawBorder = function () {
+            ctx.strokeRect(0, 0, width, height);
+        }
+        
+        var timeoutId = function () {
+            if (proccess) {
+                setTimeout(gameLoop, 1);
+            }
+        }
+
+        function distance(x1, y1, x2, y2) {
+            const xDist = x2 - x1
+            const yDist = y2 - y1
+            return Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2))
+        }
+
+
+        Ball.prototype.draw = function () {
+            ctx.fillStyle = "Black";
+            circle(this.x, this.y, this.radius, true);
+        }
+
+        Block.prototype.draw = function () {           
+            ctx.fillStyle = "Black";
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+        }
+
+        Ball.prototype.move = function(){
+            this.x += this.speedX;
+            this.y += this.speedY;
+
+            if (this.y > bottom) {
+                this.speedY = -this.speedY;
+            } else {
+                this.speedY += 1 / 4;
+            }
+
+            if (this.x + this.radius > width) {
+                this.x -= this.speedX;
+            }
+
+            if (this.x - this.radius < 0) {
+                this.x -= this.speedX;                
+            }
+
+            if (direction === 0) {
+                this.speedX = 0;
+            }
+
+            if (direction === 1) {
+                this.speedX = -5;
+                direction = 0;
+            }
+
+            if (direction === 3) {
+                this.speedX = 5;
+                direction = 0;
+            }
+        }
+
+        Ball.prototype.checkcollision = function(){
+            for (var i = 0; i < block.width; i++) {
+                if (distance(this.x + i, this.y, block.x, block.y) < 51) {
+                    ballUp++
+                    if (ballUp > 9) {
+                        bottom = block.x 
+                        ballUp = 4;
+                    }
+                }
+            }    
+        }
+
+        ball = new Ball()
+        block = new Block()
+        var proccess = true
+
+        function gameLoop() {
+            ctx.clearRect(0, 0, width, height);
+            drawBorder();
+            ball.move();
+            ball.draw();
+            block.draw();
+            ball.checkcollision();
+            timeoutId();
+        }
+
+        gameLoop()
+
+        $("body").keydown(function (event) {
+            direction = keyActions[event.keyCode]
+        })
+
+        var keyActions = {
+            37: 1, //left
+            38: 2, // up
+            39: 3 // right
+        };
+    </script>
+
+</body>
+</html>
