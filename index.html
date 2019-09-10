@@ -97,11 +97,11 @@
             if (this.y + this.radius > bottom) {
                 this.y -= this.radius;
                 this.gravitySpeed = 0;
-                acceleration(-0.9);
+                acceleration(-0.1);
             }
 
             if (this.y < height - toppi) {
-                acceleration(0.8);                                    
+                acceleration(0.1);                                    
             }
 
             if (this.x + this.radius > width) {
