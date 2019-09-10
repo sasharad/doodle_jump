@@ -23,21 +23,25 @@
 
         var bottom = height;
 
+        var toppi = 100;
+
         var direction = 0
 
         var Ball = function(){
             this.x = width / 2;
-            this.y = height / 2;
+            this.y = height - 10;
             this.speedX = 0;
             this.speedY = 1;
-            this.radius = 5
+            this.radius = 5;
+            this.gravity = 0.2;  
+            this.gravitySpeed = 0;
         }
 
         var Block = function(){
             this.x = 200;
-            this.y = 300;    
-            this.width = 100
-            this.height = 10    
+            this.y = 350;    
+            this.width = 100;
+            this.height = 10 ;   
         }
     
         var circle = function (x, y, radius, filin) {
@@ -53,11 +57,16 @@
         var drawBorder = function () {
             ctx.strokeRect(0, 0, width, height);
         }
-        
+
         var timeoutId = function () {
             if (proccess) {
                 setTimeout(gameLoop, 1);
             }
+        }
+
+        var goUp = function () {
+            ball.y = ball.y / 2;
+            
         }
 
         function distance(x1, y1, x2, y2) {
@@ -66,29 +75,37 @@
             return Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2))
         }
 
+        function acceleration(n) {
+            ball.gravity = n
+        }
 
         Ball.prototype.draw = function () {
             ctx.fillStyle = "Black";
             circle(this.x, this.y, this.radius, true);
         }
 
-        Block.prototype.draw = function () {           
+        Block.prototype.draw = function () {
             ctx.fillStyle = "Black";
             ctx.fillRect(this.x, this.y, this.width, this.height);
         }
 
         Ball.prototype.move = function(){
+            this.gravitySpeed += this.gravity;
             this.x += this.speedX;
-            this.y += this.speedY;
+            this.y += this.speedY + this.gravitySpeed;
 
-            if (this.y > bottom) {
-                this.speedY = -this.speedY;
-            } else {
-                this.speedY += 1 / 4;
+            if (this.y + this.radius > bottom) {
+                this.y -= this.radius;
+                this.gravitySpeed = 0;
+                acceleration(-0.9);
+            }
+
+            if (this.y < height - toppi) {
+                acceleration(0.8);                                    
             }
 
             if (this.x + this.radius > width) {
-                this.x -= this.speedX;
+                this.x -= this.speedX;  
             }
 
             if (this.x - this.radius < 0) {
@@ -112,14 +129,17 @@
 
         Ball.prototype.checkcollision = function(){
             for (var i = 0; i < block.width; i++) {
-                if (distance(this.x + i, this.y, block.x, block.y) < 51) {
-                    ballUp++
-                    if (ballUp > 9) {
-                        bottom = block.x 
-                        ballUp = 4;
-                    }
+                if (distance(this.x - i, this.y - 2, block.x, block.y) < 2) {
+                    bottom = this.y + 3 
+                    toppi = height / 2  
+                }        
+            }   
+            if (this.x < block.x ) {
+                if (this.y > block.y - 5) {                    
+                    bottom = height
+                    toppi = 100
                 }
-            }    
+            } 
         }
 
         ball = new Ball()
