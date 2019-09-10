@@ -19,6 +19,8 @@
 
         const colors = ['#2185C5', '#7ECEFD', '#FF7F66']
     
+        var proccess = true
+
         var ballUp = 0;
 
         var bottom = height;
@@ -37,13 +39,21 @@
             this.gravitySpeed = 0;
         }
 
-        var Block = function(){
-            this.x = 200;
-            this.y = 350;    
+        var Block = function(x, y){
+            this.x = x;
+            this.y = y;    
             this.width = 100;
             this.height = 10 ;   
         }
-    
+
+       var Block = function (x, y) {
+           this.x = x;
+           this.y = y;
+           this.width = 100;
+           this.height = 10;
+       }
+        
+
         var circle = function (x, y, radius, filin) {
                 ctx.beginPath();
                 ctx.arc(x, y, radius, 0, Math.PI * 2, false);
@@ -130,27 +140,56 @@
         Ball.prototype.checkcollision = function(){
             for (var i = 0; i < block.width; i++) {
                 if (distance(this.x - i, this.y - 2, block.x, block.y) < 2) {
-                    bottom = this.y + 3 
-                    toppi = height / 2  
-                }        
+                    bottom = this.y + 3; 
+                    toppi = height / 2;
+                }
             }   
-            if (this.x < block.x ) {
-                if (this.y > block.y - 5) {                    
-                    bottom = height
-                    toppi = 100
+            if (this.x < block.x && this.y > block.y - 5) { 
+                    bottom = height;
+                    toppi = 100;
+            }
+            if (this.x > block.x + block.width && this.y > block.y - 5) {
+                    bottom = height;
+                    toppi = 100;
+            } 
+
+
+            for (var i = 0; i < block.width; i++) {
+                if (distance(this.x - i, this.y - 2, block1.x, block1.y) < 2) {
+                    bottom = this.y + 3;
+                    toppi = 350;
+                } 
+            } 
+            if (this.x < block1.x && this.y > block1.y - 5 && this.y < block1.y + 5) {
+                    bottom = height;
+                    toppi = 100;
+            }
+            if (this.x > block1.x + block1.width && this.y > block1.y - 5 && this.y < block1.y + 5) {
+                    bottom = height;
+                    toppi = 100;
+            } 
+
+
+            for (var i = 0; i < block.width; i++) {
+                if (distance(this.x - i, this.y - 2, block2.x, block2.y) < 2) {
+                    bottom = this.y + 3;
+                    toppi = 490;
                 }
             }
-            if (this.x > block.x + block.width) {
-                if (this.y > block.y - 5) {
-                    bottom = height
-                    toppi = 100
-                }
+            if (this.x < block2.x && this.y > block2.y - 5 && this.y < block2.y + 5) {
+                bottom = height;
+                toppi = 100;
+            }
+            if (this.x > block2.x + block2.width && this.y > block2.y - 5 && this.y < block2.y + 5) {
+                bottom = height;
+                toppi = 100;
             } 
         }
 
-        ball = new Ball()
-        block = new Block()
-        var proccess = true
+        ball = new Ball();
+        block1 = new Block(150, 250); 
+        block = new Block(200, 350);
+        block2 = new Block(220, 100) 
 
         function gameLoop() {
             ctx.clearRect(0, 0, width, height);
@@ -158,6 +197,8 @@
             ball.move();
             ball.draw();
             block.draw();
+            block1.draw();
+            block2.draw();
             ball.checkcollision();
             timeoutId();
         }
