@@ -26,7 +26,7 @@
 
         var bottom = height;
 
-        var toppi = 220;
+        var toppi = 200;
 
         var direction = 0
 
@@ -66,7 +66,7 @@
 
         var timeoutId = function () {
             if (proccess) {
-                setTimeout(gameLoop, 1);
+                setTimeout(gameLoop, 50);
             }
         }
 
@@ -80,6 +80,10 @@
             const yDist = y2 - y1
             return Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2))
         }
+
+        function randomIntFromRange(min, max) {
+            return Math.floor(Math.random() * (max - min + 1) + min)
+        }        
 
         function acceleration(n) {
             ball.gravity = n;
@@ -102,8 +106,7 @@
             this.x += this.speedX;
             this.y += this.speedY + this.gravitySpeed;
 
-            if (this.y + this.radius > bottom) {
-                this.y -= this.radius;
+            if (this.y + this.radius > bottom - this.radius) {
                 this.gravitySpeed = 0;
                 acceleration(-0.042);
             }
@@ -117,7 +120,7 @@
             }
 
             if (this.x - this.radius < 0) {
-                this.x -= this.speedX;                
+                this.x -= this.speedX;
             }
 
             if (direction === 0) {
@@ -135,66 +138,101 @@
             }
         }
 
+
+            blocksSpeed = function (q) {
+                block.speedY = q;
+                block1.speedY = q;
+                block2.speedY = q;
+            }
+        
+
         Block.prototype.move = function(){  
             this.x += this.speedX;
             this.y += this.speedY;
 
-            bottom = this.y;
+            var flag = 0;
 
-            
+            bottom = block.y;                        
+
+
             if (this.speedY > 0) {
-                if (ballUp > 60) {
+                ballUp++;
+                if (ballUp > 30) {
                     this.speedY = 0
                     ballUp = 0
                 }
-                ballUp++
             }
-
-            if (ball.x > block1.x && ball.y < block1.height ) {
-                bottom = block1
-                
-            }
-
 
             for (var i = 0; i < block.width; i++) {
                 if (distance(ball.x - i, ball.y - 2, this.x, this.y) < 2) {
+                    flag++
+                    if(flag > 1){
+                    bottom = this.y;  
+
                     
-                    ball.speedY = -ball.speedY;                          
-                    this.speedY = 1;
-                } 
+                    ball.speedY = -ball.speedY;
+
+                    blocksSpeed(2)
+
+                    flag = 0
+                    }                    
+                }
             }
-            
         }
 
 
+        var blocks;
+
+        
+
+        function init() {
+            blocks = []
+
+            for (let i = 0; i < 2; i++) { 
+
+             var x = randomIntFromRange(0, height)
+             var y = randomIntFromRange(0, height)
+
+                 blocks.push(new Block(x, y));
+            }
+
+            blocks.forEach( function (e) {
+                console.log(e);
+                
+                e.draw();
+            });
+
+        }
+
         ball = new Ball();
-        block1 = new Block(200, 250); 
-        block = new Block(200, 350);
-        block2 = new Block(220, 180);
+        // block = new Block(200, 350); 
+        // block1 = new Block(210, 250); 
+        // block2 = new Block(220, 180);
 
         blocksDraw = function(){
-            block.draw(),
-            block1.draw(),
-            block2.draw()
+            // block.draw(),
+            // block1.draw(),
+            // block2.draw()
         }
 
         blocksMove = function(){
-            block2.move();
-            block.move();
-            block1.move();
+            // block.move();
+            // block1.move();
+            // block2.move();
         }
         
 
         function gameLoop() {
             ctx.clearRect(0, 0, width, height);
             drawBorder();
-            blocksMove()
+            blocksMove();
             ball.move();
             ball.draw();
             blocksDraw();
             timeoutId();
         }
 
+        init()
         gameLoop()
 
         $("body").keydown(function (event) {
