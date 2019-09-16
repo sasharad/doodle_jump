@@ -71,7 +71,7 @@
 
         var timeoutId = function () {
             if (proccess) {
-                setTimeout(gameLoop, 30);
+                setTimeout(gameLoop, 10);
             }
         }
 
@@ -112,15 +112,15 @@
             this.y += this.speedY;
 
 
-            if (this.speedY > 0) {
-                this.speedY = -0.1;
-            }  else {
-                this.speedY += 1
-            }
+            // if (this.speedY > 0) {
+            //     this.speedY = -0.1;
+            // }  else {
+            //     this.speedY += 1
+            // }
 
             if (this.y + this.radius > bottom) {
                 this.speedY = -this.speedY;
-
+            }
 
             if (this.x + this.radius > width) {
                 this.x -= this.speedX;
@@ -225,4 +225,3 @@
 </body>
 
 </html>
-
