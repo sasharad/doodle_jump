@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link href="style.css" rel="stylesheet">
     <title>Document</title>
 </head>
+
 <body>
     <script src="https://code.jquery.com/jquery-2.1.0.js"></script>
 
@@ -19,46 +21,49 @@
         var height = canvas.height;
 
         const colors = ['#2185C5', '#7ECEFD', '#FF7F66']
-    
+
         var proccess = true
 
         var ballUp = 0;
 
-        var bottom = height;
+        var flag = 0;
 
-        var toppi = 200;
+        var bottom = height;
+        var lucky = height;
+
+        var toppi = 400;
 
         var direction = 0
 
-        var Ball = function(){
+        var Ball = function () {
             this.x = width / 2;
             this.y = 350;
             this.speedX = 0;
-            this.speedY = 1;
+            this.speedY = 5;
             this.radius = 5;
-            this.gravity = 1;  
+            this.gravity = 1;
             this.gravitySpeed = 0;
         }
 
-        var Block = function(x, y){
+        var Block = function (x, y) {
             this.x = x;
-            this.y = y;    
+            this.y = y;
             this.width = 100;
             this.height = 10;
             this.speedX = 0;
-            this.speedY = 0;   
+            this.speedY = 0;
         }
-        
+
 
         var circle = function (x, y, radius, filin) {
-                ctx.beginPath();
-                ctx.arc(x, y, radius, 0, Math.PI * 2, false);
-                if (filin) {
-                    ctx.fill();
-                } else {
-                    ctx.stroke();
-                }
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2, false);
+            if (filin) {
+                ctx.fill();
+            } else {
+                ctx.stroke();
             }
+        }
 
         var drawBorder = function () {
             ctx.strokeRect(0, 0, width, height);
@@ -66,13 +71,13 @@
 
         var timeoutId = function () {
             if (proccess) {
-                setTimeout(gameLoop, 50);
+                setTimeout(gameLoop, 30);
             }
         }
 
         var goUp = function () {
             ball.y = ball.y / 2;
-            
+
         }
 
         function distance(x1, y1, x2, y2) {
@@ -83,13 +88,13 @@
 
         function randomIntFromRange(min, max) {
             return Math.floor(Math.random() * (max - min + 1) + min)
-        }        
+        }
 
         function acceleration(n) {
             ball.gravity = n;
         }
 
-         
+
 
         Ball.prototype.draw = function () {
             ctx.fillStyle = "blue";
@@ -101,22 +106,24 @@
             ctx.fillRect(this.x, this.y, this.width, this.height);
         }
 
-        Ball.prototype.move = function(){
+        Ball.prototype.move = function () {
             this.gravitySpeed += this.gravity;
             this.x += this.speedX;
-            this.y += this.speedY + this.gravitySpeed;
+            this.y += this.speedY;
 
-            if (this.y + this.radius > bottom - this.radius) {
-                this.gravitySpeed = 0;
-                acceleration(-0.042);
+
+            if (this.speedY > 0) {
+                this.speedY = -0.1;
+            }  else {
+                this.speedY += 1
             }
 
-            if (this.y < height - toppi) {
-                acceleration(0.04);                                    
+            if (this.y + this.radius > bottom) {
+                this.speedY = -this.speedY;
             }
 
             if (this.x + this.radius > width) {
-                this.x -= this.speedX;  
+                this.x -= this.speedX;
             }
 
             if (this.x - this.radius < 0) {
@@ -138,97 +145,67 @@
             }
         }
 
-
-            blocksSpeed = function (q) {
-                block.speedY = q;
-                block1.speedY = q;
-                block2.speedY = q;
-            }
-        
-
-        Block.prototype.move = function(){  
+        Block.prototype.move = function () {
             this.x += this.speedX;
             this.y += this.speedY;
 
-            var flag = 0;
+            // if (ballUp > 200) {
+            //     for (let i = 0; i < blocks.length; i++) {
+            //         blocks[i].speedY = 0;
+            //     }                
+            //     ballUp = 0
+            // }
 
-            bottom = block.y;                        
+            // if (this.speedY > 0) {
+            //     ballUp++
+            // }
 
-
-            if (this.speedY > 0) {
-                ballUp++;
-                if (ballUp > 30) {
-                    this.speedY = 0
-                    ballUp = 0
-                }
-            }
-
-            for (var i = 0; i < block.width; i++) {
-                if (distance(ball.x - i, ball.y - 2, this.x, this.y) < 2) {
-                    flag++
-                    if(flag > 1){
-                    bottom = this.y;  
-
-                    
+            for (var i = 0; i < this.width; i++) {
+                if (distance(this.x + i, this.y - 2, ball.x, ball.y) < 4) {
+                    bottom = this.y;
                     ball.speedY = -ball.speedY;
+                    console.log("dk");
+                    
+                    // for (let i = 0; i < blocks.length; i++) {
+                    //     blocks[i].speedY = 2;
 
-                    blocksSpeed(2)
-
-                    flag = 0
-                    }                    
+                    // }
                 }
             }
+
+            if (ball.x > this.x + this.width || ball.x < this.x && ball.x < this.y && ball.x > this.y + 5) {
+                // bottom = height;
+
+            } 
+            
+            bottom = height;       
         }
 
 
-        var blocks;
-
-        
+        var blocks = [];
 
         function init() {
-            blocks = []
 
-            for (let i = 0; i < 2; i++) { 
-
-             var x = randomIntFromRange(0, height)
-             var y = randomIntFromRange(0, height)
-
-                 blocks.push(new Block(x, y));
+            for (let i = 0; i < 15; i++) {
+                var x = randomIntFromRange(0,width);
+                var y = randomIntFromRange(0, height);
+                blocks.push(new Block(x, y));
             }
-
-            blocks.forEach( function (e) {
-                console.log(e);
-                
-                e.draw();
-            });
-
         }
 
         ball = new Ball();
-        // block = new Block(200, 350); 
-        // block1 = new Block(210, 250); 
-        // block2 = new Block(220, 180);
 
-        blocksDraw = function(){
-            // block.draw(),
-            // block1.draw(),
-            // block2.draw()
-        }
 
-        blocksMove = function(){
-            // block.move();
-            // block1.move();
-            // block2.move();
-        }
-        
 
         function gameLoop() {
             ctx.clearRect(0, 0, width, height);
             drawBorder();
-            blocksMove();
             ball.move();
             ball.draw();
-            blocksDraw();
+            blocks.forEach(function (e) {
+                e.move();
+                e.draw();
+            });
             timeoutId();
         }
 
@@ -247,4 +224,5 @@
     </script>
 
 </body>
+
 </html>
