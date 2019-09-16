@@ -120,7 +120,7 @@
 
             if (this.y + this.radius > bottom) {
                 this.speedY = -this.speedY;
-            }
+
 
             if (this.x + this.radius > width) {
                 this.x -= this.speedX;
@@ -196,7 +196,6 @@
         ball = new Ball();
 
 
-
         function gameLoop() {
             ctx.clearRect(0, 0, width, height);
             drawBorder();
@@ -226,3 +225,4 @@
 </body>
 
 </html>
+
