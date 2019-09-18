@@ -40,7 +40,7 @@
             this.y = 350;
             this.speedX = 0;
             this.speedY = 5;
-            this.radius = 5;
+            this.radius = 3;
             this.gravity = 1;
             this.gravitySpeed = 0;
         }
@@ -71,7 +71,7 @@
 
         var timeoutId = function () {
             if (proccess) {
-                setTimeout(gameLoop, 10);
+                setTimeout(gameLoop, 1);
             }
         }
 
@@ -107,7 +107,7 @@
         }
 
         Ball.prototype.move = function () {
-            this.gravitySpeed += this.gravity;
+            // this.gravitySpeed += this.gravity;
             this.x += this.speedX;
             this.y += this.speedY;
 
@@ -116,7 +116,7 @@
                 ballUp++;
             } 
 
-            if (this.y + this.radius > bottom) {
+            if (this.y + this.radius > height) {
                 this.speedY = -this.speedY;
             }
 
@@ -147,6 +147,10 @@
             this.x += this.speedX;
             this.y += this.speedY;
 
+            if (this.y > height) {
+                this.y = -10;
+            }
+
             if(ball.y < 250){            
                 ballUp = 0; 
                 for (let i = 0; i < blocks.length; i++) {
@@ -159,17 +163,14 @@
             }
 
             for (var i = 0; i < this.width; i++) {
-                if (distance(this.x + i, this.y - 2, ball.x, ball.y) < 10) {
-                    // bottom = this.y;
-                    ball.speedY = -ball.speedY;
+                if (distance(this.x + i, this.y, ball.x, ball.y + ball.radius) < 3) {
+                    ball.speedY = 5;
                 }
             }
 
-            if (ball.x > this.x + this.width || ball.x < this.x && ball.x < this.y && ball.x > this.y + 5) {
-                // bottom = height;
-            } 
-            
-            bottom = height;       
+            // if (ball.x > this.x + this.width || ball.x < this.x && ball.x < this.y && ball.x > this.y + 5) {
+            //     // bottom = height;
+            // }             
         }
 
 
@@ -179,9 +180,28 @@
 
             for (let i = 0; i < 15; i++) {
                 var x = randomIntFromRange(0,width);
-                var y = randomIntFromRange(0, height);
+                var y = randomIntFromRange(0, height - 30);
+
+                if (i !== 0) {
+                    for (var j = 0; j < blocks.length; j++) {
+                        if (distance(x, y, blocks[j].x, blocks[j].y || distance(x, y, blocks[j].x + 100, blocks[j].y)) < 100) {
+                            x = randomIntFromRange(0, width);
+                            y = randomIntFromRange(0, height - 20)
+                            
+                            j = -1
+                        }
+                        console.log(j);
+                        // if (distance(x, y, blocks[j].x + 100, blocks[j].y) < 40) {
+                        //     x = randomIntFromRange(0, width);
+                        //     y = randomIntFromRange(0, height)
+
+                        //     j = -1
+                        // }                        
+                    }
+                }
                 blocks.push(new Block(x, y));
             }
+            
         }
 
         ball = new Ball();
@@ -198,7 +218,7 @@
             });
             timeoutId();
         }
-
+        // requestAnimationFrame(gameLoop)
         init()
         gameLoop()
 
