@@ -110,13 +110,30 @@
 
         Ball.prototype.move = function (prev) {
             this.gravitySpeed += this.gravity;
+			let tmpSpeed, diff;
 
-			console.log('this.y = ' + this.y + ' ' + ' speedY = ' + this.speedY + 'collision = ' + this.collisionPoint);
+			// console.log('this.y = ' + this.y + ' ' + ' speedY = ' + this.speedY + 'collision = ' + this.collisionPoint);
 			this.y += this.speedY;
             this.x += this.speedX;
 
-			if (this.y + 200 < this.collisionPoint && this.collisionPoint != 0)
+			if (this.y + 100 < this.collisionPoint && this.collisionPoint != 0)
 				this.collision();
+
+			if (this.y < 250) {
+				tmpSpeed = this.speedY;
+				this.speedY = 0;
+				diff = this.collisionPoint - this.y;
+				blocks.forEach(function (e) {
+	                e.move(100 - diff, tmpSpeed);
+	                e.draw();
+	            });
+				console.log('tmpSpeed = ' + tmpSpeed + '  diff = ' + diff);
+
+			}
+
+			blocks.forEach(function (e) {
+				e.draw();
+			});
 
             if (this.y + this.radius > bottom)
                 this.collision();
@@ -147,37 +164,38 @@
 			console.log('privet');
 			this.speedY = -this.speedY;
 			this.collisionPoint = this.y;
+			console.log('collision speedY = ' + this.speedY + ' this.y = ' + this.y);
 		}
 
-        Block.prototype.move = function (prev) {
-			this.y += this.speedY;
+        Block.prototype.move = function (diff, tmpSpeed) {
 
-			this.x += this.speedX;
 
             if (this.y > height) {
                 this.y = -10;
             }
 
-            if(ball.y < 250){
-                ballUp = 0;
-                for (let i = 0; i < blocks.length; i++) {
-                    blocks[i].speedY = 2;
-                }
-            } else  {
-                for (let i = 0; i < blocks.length; i++) {
-                    blocks[i].speedY = 0;
-                }
-            }
+			while (this.y < this.y + diff) {
+				this.y -= this.tmpSpeed;
+			}
+
+
+            // if(ball.y < 250){
+            //     ballUp = 0;
+            //     for (let i = 0; i < blocks.length; i++) {
+            //         blocks[i].speedY = 8;
+            //     }
+            // } else  {
+            //     for (let i = 0; i < blocks.length; i++) {
+            //         blocks[i].speedY = 0;
+            //     }
+            // }
 
             for (var i = 0; i < this.width; i++) {
-                if (distance(this.x + i, this.y, ball.x, ball.y + ball.radius) < 3) {
-                    ball.speedY = 5;
+                if ((distance(this.x + i, this.y, ball.x, ball.y + ball.radius) < 3) && ball.speedY > 0) {
+					console.log('collision');
+                    ball.collision();
                 }
             }
-
-            // if (ball.x > this.x + this.width || ball.x < this.x && ball.x < this.y && ball.x > this.y + 5) {
-            //     // bottom = height;
-            // }
         }
 
 
@@ -220,10 +238,6 @@
             ball.move(this.ballStartPosition);
 				// this.ballStartPosition = this.ball.y;
             ball.draw();
-            blocks.forEach(function (e) {
-                e.move();
-                e.draw();
-            });
             timeoutId();
         }
         // requestAnimationFrame(gameLoop)
