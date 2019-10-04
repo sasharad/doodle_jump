@@ -12,7 +12,7 @@
 <body>
     <script src="https://code.jquery.com/jquery-2.1.0.js"></script>
 
-    <canvas id="canvas" width="500" height="500"></canvas>
+    <canvas id="canvas" width="350" height="500"></canvas>
 
     <script>
         var canvas = document.getElementById("canvas");
@@ -24,23 +24,28 @@
 
         var proccess = true
 
-        var ballUp = 0;
+        var blockUp = false;
 		var ballStartPosition;
 
-        var flag = 0;
+        var flag = false;
 
         var bottom = height;
         var lucky = height;
 
-        var toppi = 400;
+        var blockNum = 0;
 
-        var direction = 0
+        var direction = 0;
+
+        var distStart = 0;
+        var distEnd = 250;
+        var distStartPrev = 0;
+
 
         var Ball = function () {
             this.x = width / 2;
             this.y = 350;
             this.speedX = 0;
-            this.speedY = 3;
+            this.speedY = 5;
             this.radius = 5;
             this.gravity = 1;
             this.gravitySpeed = 0;
@@ -73,7 +78,7 @@
 
         var timeoutId = function () {
             if (proccess) {
-                setTimeout(gameLoop, 16);
+                setTimeout(gameLoop, 56);
             }
         }
 
@@ -92,11 +97,24 @@
             return Math.floor(Math.random() * (max - min + 1) + min)
         }
 
+        function collision(){
+            for (let k = 0; k < blocks.length; k++) {
+                for (var i = 0; i < blocks[0].width; i++) {
+                    if (distance(blocks[k].x + i, blocks[k].y, ball.x, ball.y + ball.radius) < 3 && ball.speedY > 0) {
+                        // ball.speedY = -5;
+                        distStart = blocks[k].y;
+                        blockNum = k;
+                        blockUp = true;        
+                        flag = false               
+                    }
+                } 
+                
+            }                           
+        }
+
         function acceleration(n) {
             ball.gravity = n;
         }
-
-
 
         Ball.prototype.draw = function () {
             ctx.fillStyle = "blue";
@@ -108,18 +126,27 @@
             ctx.fillRect(this.x, this.y, this.width, this.height);
         }
 
-        Ball.prototype.move = function (prev) {
-            this.gravitySpeed += this.gravity;
-
-			console.log('this.y = ' + this.y + ' ' + ' speedY = ' + this.speedY + 'collision = ' + this.collisionPoint);
-			this.y += this.speedY;
+        Ball.prototype.move = function () {
+            this.gravity += this.gravitySpeed;
+			this.y += this.speedY + this.gravitySpeed;
             this.x += this.speedX;
 
-			if (this.y + 200 < this.collisionPoint && this.collisionPoint != 0)
-				this.collision();
+            if (this.y + this.radius > height) {
+                // this.speedY = -this.speedY;\
+                this.speedY = 0;
+                flag = false;
+            }  
 
-            if (this.y + this.radius > bottom)
-                this.collision();
+            if (flag === false) {
+                this.speedY -= 0.5;
+            }
+
+            if (flag === true) {
+                this.speedY += 0.5;
+            }
+
+            if (this.y < 300)
+                flag = true  
 
             if (this.x + this.radius > width)
                 this.x -= this.speedX;
@@ -143,72 +170,47 @@
 			direction = 0;
         }
 
-		Ball.prototype.collision = function () {
-			console.log('privet');
-			this.speedY = -this.speedY;
-			this.collisionPoint = this.y;
-		}
-
-        Block.prototype.move = function (prev) {
+        Block.prototype.move = function () {
 			this.y += this.speedY;
-
 			this.x += this.speedX;
 
             if (this.y > height) {
-                this.y = -10;
+                this.x = randomIntFromRange(0, width - this.width);
+                this.y = -20;
             }
 
-            if(ball.y < 250){
-                ballUp = 0;
+            if (blockUp === true) {
                 for (let i = 0; i < blocks.length; i++) {
-                    blocks[i].speedY = 2;
-                }
-            } else  {
-                for (let i = 0; i < blocks.length; i++) {
-                    blocks[i].speedY = 0;
+                   blocks[i].y++;
                 }
             }
 
-            for (var i = 0; i < this.width; i++) {
-                if (distance(this.x + i, this.y, ball.x, ball.y + ball.radius) < 3) {
-                    ball.speedY = 5;
-                }
-            }
+            collision();
 
-            // if (ball.x > this.x + this.width || ball.x < this.x && ball.x < this.y && ball.x > this.y + 5) {
-            //     // bottom = height;
-            // }
+            if (blocks[blockNum].y > 450)
+                blockUp = false;
         }
-
 
         var blocks = [];
 
         function init() {
 
-            for (let i = 0; i < 15; i++) {
-                var x = randomIntFromRange(0,width);
+            for (let i = 0; i < 10; i++) {
+                var x = randomIntFromRange(0,width - 100);
                 var y = randomIntFromRange(0, height - 30);
 
                 if (i !== 0) {
                     for (var j = 0; j < blocks.length; j++) {
                         if (distance(x, y, blocks[j].x, blocks[j].y || distance(x, y, blocks[j].x + 100, blocks[j].y)) < 100) {
-                            x = randomIntFromRange(0, width);
+                            x = randomIntFromRange(0, width - 100);
                             y = randomIntFromRange(0, height - 20)
 
                             j = -1
                         }
-                        console.log(j);
-                        // if (distance(x, y, blocks[j].x + 100, blocks[j].y) < 40) {
-                        //     x = randomIntFromRange(0, width);
-                        //     y = randomIntFromRange(0, height)
-
-                        //     j = -1
-                        // }
                     }
                 }
                 blocks.push(new Block(x, y));
             }
-			this.ballStartPosition = this.ball.y;
 		}
 
         ball = new Ball();
@@ -217,7 +219,7 @@
         function gameLoop() {
             ctx.clearRect(0, 0, width, height);
             drawBorder();
-            ball.move(this.ballStartPosition);
+            ball.move();
 				// this.ballStartPosition = this.ball.y;
             ball.draw();
             blocks.forEach(function (e) {
