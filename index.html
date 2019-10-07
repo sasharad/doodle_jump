@@ -14,11 +14,17 @@
 
     <canvas id="canvas" width="350" height="500"></canvas>
 
+    <img id="photo" src="doodler_small.png">
+    <img id="photo_two" src="platform.png">
+
+
     <script>
         var canvas = document.getElementById("canvas");
         var ctx = canvas.getContext("2d");
         var width = canvas.width;
         var height = canvas.height;
+        var img = document.getElementById("photo");
+        var img_two = document.getElementById("photo_two");
 
         const colors = ['#2185C5', '#7ECEFD', '#FF7F66']
 
@@ -46,7 +52,7 @@
             this.y = 350;
             this.speedX = 0;
             this.speedY = -4;
-            this.radius = 5;
+            this.radius = 40;
             this.gravity = 1;
             this.gravitySpeed = 0;
             this.collisionPoint = 0;
@@ -55,7 +61,7 @@
         var Block = function (x, y) {
             this.x = x;
             this.y = y;
-            this.width = 100;
+            this.width = 65;
             this.height = 10;
             this.speedX = 0;
             this.speedY = 0;
@@ -78,7 +84,7 @@
 
         var timeoutId = function () {
             if (proccess) {
-                setTimeout(gameLoop, 56);
+                setTimeout(gameLoop, 16);
             }
         }
 
@@ -97,6 +103,15 @@
             return Math.floor(Math.random() * (max - min + 1) + min)
         }
 
+        var gameOver = function () {
+                proccess = false
+                ctx.font = "40px Courier";
+                ctx.fillStyle = "Red";
+                ctx.textAllign = "center";
+                ctx.textBaseLine = "middle";
+                ctx.fillText("Game Over ", width / 4, height / 2);
+        }
+
         function collision() {
             for (let k = 0; k < blocks.length; k++) {
                 for (var i = 0; i < blocks[0].width; i++) {
@@ -113,18 +128,35 @@
             }
         }
 
+        function collisiontwo() {
+            for (let k = 0; k < blocks.length; k++) {
+                if (ball.x > blocks[k].x && ball.x < blocks[k].x + blocks[k].width && ball.y > blocks[k].y && ball.y < blocks[k].y + 20 && ball.speedY > 4){
+                    console.log("skk");
+                    ball.speedY = 0;
+                    ball.speedY = -5;
+                    flag = false;
+                    distStart = blocks[k].y;
+                    blockNum = k;
+                    blockUp = true;
+                }
+            }
+        }
+
         function acceleration(n) {
             ball.gravity = n;
         }
 
         Ball.prototype.draw = function () {
-            ctx.fillStyle = "blue";
-            circle(this.x, this.y, this.radius, true);
+            // ctx.fillStyle = "blue";
+            // circle(this.x, this.y, this.radius, true);
+            ctx.drawImage(img, this.x - this.radius, this.y - this.radius)
         }
 
         Block.prototype.draw = function () {
-            ctx.fillStyle = "Black";
-            ctx.fillRect(this.x, this.y, this.width, this.height);
+            // ctx.fillStyle = "Black";
+            // ctx.fillRect(this.x, this.y, this.width, this.height);
+            ctx.drawImage(img_two, this.x - 20, this.y)
+
         }
 
         Ball.prototype.move = function () {
@@ -132,23 +164,29 @@
             this.y += this.speedY + this.gravitySpeed;
             this.x += this.speedX;
 
-            if (this.y + this.radius > height) {
-                // this.speedY = -this.speedY;\
-                this.speedY = -5
-                flag = false;
+            if (this.y - 40> height) {
+                // this.speedY = -this.
+                gameOver()
             }
 
             if (flag === false) {
-                this.speedY -= 0.5;
+                this.speedY -= 0.3;
+             
+                  // this.speedY -= 0.5;
             }
 
             if (flag === true) {
-                this.speedY += 2;
+                this.speedY += 0.3;
+                if (this.y < 300) {
+                    this.speedY += 1;                
+                }
+                // this.speedY += 2;
             }
 
-            if (this.y < 300)
+            if (this.y < 400){
+                // this.speedY = 5                
                 flag = true
-
+            }
             if (this.x + this.radius > width)
                 this.x -= this.speedX;
 
@@ -160,10 +198,10 @@
 
             switch (direction) {
                 case 1:
-                    this.speedX = -5;
+                    this.speedX = -10;
                     break;
                 case 3:
-                    this.speedX = 5;
+                    this.speedX = 10    ;
                     break;
                 default:
                     this.speedX = 0;
@@ -180,23 +218,27 @@
                 this.y = -20;
             }
 
+            if (blocks[blockNum].y > 450 && blockUp === true){
+                // ball.speedY = -5;
+                flag = false;
+                blockUp = false;
+            }
+
             if (blockUp === true) {
                 for (let i = 0; i < blocks.length; i++) {
                     blocks[i].y++;
+                    ball.speedY = -2;
                 }
             }
 
-            collision();
-
-            if (blocks[blockNum].y > 450)
-                blockUp = false;
+            collisiontwo();
         }
 
         var blocks = [];
 
         function init() {
 
-            for (let i = 0; i < 10; i++) {
+            for (let i = 0; i < 12; i++) {
                 var x = randomIntFromRange(0, width - 100);
                 var y = randomIntFromRange(0, height - 30);
 
@@ -218,15 +260,17 @@
 
 
         function gameLoop() {
+            console.log(flag);
+            
             ctx.clearRect(0, 0, width, height);
             drawBorder();
             ball.move();
             // this.ballStartPosition = this.ball.y;
-            ball.draw();
             blocks.forEach(function (e) {
                 e.move();
                 e.draw();
             });
+            ball.draw();
             timeoutId();
         }
         // requestAnimationFrame(gameLoop)

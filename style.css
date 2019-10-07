@@ -2,3 +2,8 @@ body{
     justify-content: space-around;
        color: black;
 }
+
+img{
+    width: 10px;
+    height: 10px;
+}
