@@ -10,7 +10,9 @@
 </head>
 
 <body>
-    <script src="https://code.jquery.com/jquery-2.1.0.js"></script>
+    <!-- <script src="..//jquery-3.4.1.min.js"></script> -->
+  <script src="https://code.jquery.com/jquery-2.1.0.js"></script>
+
 
     <canvas id="canvas" width="350" height="500"></canvas>
 
@@ -34,6 +36,7 @@
         var ballStartPosition;
 
         var flag = false;
+        var flagX = false;
 
         var bottom = height;
         var lucky = height;
@@ -47,16 +50,6 @@
         var distStartPrev = 0;
 
 
-        var Ball = function () {
-            this.x = width / 2;
-            this.y = 350;
-            this.speedX = 0;
-            this.speedY = -4;
-            this.radius = 40;
-            this.gravity = 1;
-            this.gravitySpeed = 0;
-            this.collisionPoint = 0;
-        }
 
         var Block = function (x, y) {
             this.x = x;
@@ -67,7 +60,26 @@
             this.speedY = 0;
         }
 
+        const mouse = {
+                x: width / 2,
+                y: height / 2
+        }
 
+        addEventListener('mousemove', event => {
+            mouse.x = event.clientX
+            mouse.y = event.clientY
+        })
+
+        var Ball = function () {
+            this.x = mouse.x;
+            this.y = 350;
+            this.speedX = 0;
+            this.speedY = -4;
+            this.radius = 40;
+            this.gravity = 1;
+            this.gravitySpeed = 0;
+            this.collisionPoint = 0;
+        }
         var circle = function (x, y, radius, filin) {
             ctx.beginPath();
             ctx.arc(x, y, radius, 0, Math.PI * 2, false);
@@ -149,20 +161,19 @@
         Ball.prototype.draw = function () {
             // ctx.fillStyle = "blue";
             // circle(this.x, this.y, this.radius, true);
-            ctx.drawImage(img, this.x - this.radius, this.y - this.radius)
+            ctx.drawImage(img, this.x - this.radius, this.y - this.radius);
         }
 
         Block.prototype.draw = function () {
             // ctx.fillStyle = "Black";
             // ctx.fillRect(this.x, this.y, this.width, this.height);
-            ctx.drawImage(img_two, this.x - 20, this.y)
-
+            ctx.drawImage(img_two, this.x - 20, this.y + 15);
         }
 
         Ball.prototype.move = function () {
             this.gravity += this.gravitySpeed;
             this.y += this.speedY + this.gravitySpeed;
-            this.x += this.speedX;
+            this.x = mouse.x
 
             if (this.y - 40> height) {
                 // this.speedY = -this.
@@ -187,25 +198,27 @@
                 // this.speedY = 5                
                 flag = true
             }
-            if (this.x + this.radius > width)
-                this.x -= this.speedX;
+            if (this.x + 10 > width)
+                this.x = width - this.radius
 
-            if (this.x - this.radius < 0)
-                this.x -= this.speedX;
+            if (this.x - 10 < 0)
+                this.x = 0 + this.radius
 
             if (direction === 0)
                 this.speedX = 0;
 
             switch (direction) {
                 case 1:
-                    this.speedX = -10;
+                    // this.speedX = -5;
+                    flagX = true;
                     break;
                 case 3:
-                    this.speedX = 10    ;
+                    this.speedX = 5;
                     break;
                 default:
-                    this.speedX = 0;
+                    // this.speedX = 0;
             }
+
             direction = 0;
         }
 
@@ -238,7 +251,7 @@
 
         function init() {
 
-            for (let i = 0; i < 12; i++) {
+            for (let i = 0; i < 10; i++) {
                 var x = randomIntFromRange(0, width - 100);
                 var y = randomIntFromRange(0, height - 30);
 
@@ -260,8 +273,6 @@
 
 
         function gameLoop() {
-            console.log(flag);
-            
             ctx.clearRect(0, 0, width, height);
             drawBorder();
             ball.move();
