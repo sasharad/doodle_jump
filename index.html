@@ -51,6 +51,17 @@
 
 
 
+        var Ball = function () {
+            this.x = 250;
+            this.y = 350;
+            this.speedX = 0;
+            this.speedY = -4;
+            this.radius = 40;
+            this.gravity = 1;
+            this.gravitySpeed = 0;
+            this.collisionPoint = 0;
+        }
+
         var Block = function (x, y) {
             this.x = x;
             this.y = y;
@@ -61,25 +72,15 @@
         }
 
         const mouse = {
-                x: width / 2,
-                y: height / 2
+                x: 250,
+                y: 300
+
         }
 
         addEventListener('mousemove', event => {
             mouse.x = event.clientX
             mouse.y = event.clientY
         })
-
-        var Ball = function () {
-            this.x = mouse.x;
-            this.y = 350;
-            this.speedX = 0;
-            this.speedY = -4;
-            this.radius = 40;
-            this.gravity = 1;
-            this.gravitySpeed = 0;
-            this.collisionPoint = 0;
-        }
         var circle = function (x, y, radius, filin) {
             ctx.beginPath();
             ctx.arc(x, y, radius, 0, Math.PI * 2, false);
@@ -199,10 +200,10 @@
                 flag = true
             }
             if (this.x + 10 > width)
-                this.x = width - this.radius
+                this.x = width - 10
 
             if (this.x - 10 < 0)
-                this.x = 0 + this.radius
+                this.x = 10 
 
             if (direction === 0)
                 this.speedX = 0;
