@@ -10,15 +10,26 @@
 </head>
 
 <body>
+    <header>
+        <div class="foot">
+            <!-- <img src="top.png" alt=""> -->
+        </div>
+    </header>
+    <main>
+        <canvas ontouchmove="Touchy(event)" id="canvas" width="350" height="500"></canvas>
+        
+        <img class="omg" id="photo" src="doodler_small.png">
+        <img class="omg" id="photo_two" src="platform.png">
+        <img class="omg" id="top" src="top.png">
+    </main>
     <!-- <script src="..//jquery-3.4.1.min.js"></script> -->
-  <script src="https://code.jquery.com/jquery-2.1.0.js"></script>
+    <footer>
 
-
-    <canvas id="canvas" width="350" height="500"></canvas>
-
-    <img id="photo" src="doodler_small.png">
-    <img id="photo_two" src="platform.png">
-
+    </footer>
+    
+    
+    
+    <script src="https://code.jquery.com/jquery-2.1.0.js"></script>
 
     <script>
         var canvas = document.getElementById("canvas");
@@ -27,6 +38,8 @@
         var height = canvas.height;
         var img = document.getElementById("photo");
         var img_two = document.getElementById("photo_two");
+        var toper = document.getElementById("top");
+
 
         const colors = ['#2185C5', '#7ECEFD', '#FF7F66']
 
@@ -73,10 +86,9 @@
             this.speedY = 0;
         }
 
-        const mouse = {
-                x: 250,
+        var mouse = {
+                x: 250 ,
                 y: 300
-
         }
 
         addEventListener('mousemove', event => {
@@ -94,7 +106,10 @@
         }
 
         var drawBorder = function () {
-            ctx.strokeRect(0, 0, width, height);
+            ctx.fillStyle = "Black";
+            // ctx.fillRect(0, height -5, width, height);
+            ctx.drawImage(toper, 0, 0, 350, 30);
+            ctx.drawImage(toper, 0, height - 13);
         }
 
         var drawScore = function () {
@@ -102,7 +117,7 @@
             ctx.fillStyle = "Blue";
             ctx.textAllign = "left";
             ctx.textBaseLine = "top";
-            ctx.fillText("Score: " + score, 10, 20);
+            ctx.fillText("Score: " + score, 10, 13);
         };
 
         var timeoutId = function () {
@@ -113,7 +128,6 @@
 
         var goUp = function () {
             ball.y = ball.y / 2;
-
         }
 
         function distance(x1, y1, x2, y2) {
@@ -135,10 +149,6 @@
                 ctx.fillText("Game Over: " + score, 80, height / 2);
         }
 
-        function drawScore() {
-            
-        }
-
         function collision() {
             for (let k = 0; k < blocks.length; k++) {
                 for (var i = 0; i < blocks[0].width; i++) {
@@ -154,6 +164,11 @@
 
             }
         }
+
+        function Touchy(event) {
+            ball.x = event.touches[0].clientX;
+        }
+
 
         function collisiontwo() {
             for (let k = 0; k < blocks.length; k++) {
@@ -187,9 +202,9 @@
         Ball.prototype.move = function () {
             this.gravity += this.gravitySpeed;
             this.y += this.speedY + this.gravitySpeed;
-            this.x = mouse.x
+            this.x = mouse.x;
 
-            if (this.y - 40> height) {
+            if (this.y - 20 > height) {
                 // this.speedY = -this.
                 gameOver()
             }
@@ -240,9 +255,18 @@
             this.y += this.speedY;
             this.x += this.speedX;
 
-            if (this.y > height) {
-                this.x = randomIntFromRange(0, width - this.width);
-                this.y = -20;
+            if (this.y > height - 10) {
+                this.x = randomIntFromRange(0, width - this.width)
+                for (let j = 0; j < blocks.length; j++) {
+                    if(this.y < 0){
+                        if (this.x + 30 > blocks[j].x || this.x - 30 < blocks[j].x) {
+                            this.x = randomIntFromRange(0, width - this.width);
+
+                            j = -1
+                        }
+                    }
+                }
+                this.y = -10;
             }
 
             if (blocks[blockNum].y > 450 && blockUp === true){
@@ -289,15 +313,14 @@
 
         function gameLoop() {
             ctx.clearRect(0, 0, width, height);
-            drawBorder();
-            drawScore();
             ball.move();
-            // this.ballStartPosition = this.ball.y;
             blocks.forEach(function (e) {
                 e.move();
                 e.draw();
             });
             ball.draw();
+            drawBorder();
+            drawScore();
             timeoutId();
         }
         // requestAnimationFrame(gameLoop)

@@ -1,9 +1,26 @@
 body{
     justify-content: space-around;
-       color: black;
+    color: black;
+    background-image: url('BG.jpeg')
 }
 
 img{
-    width: 10px;
+    opacity: 1;
+    width: 10000px;
+    height: 100px;
+}
+.omg{
+    opacity: 0;
+    width: 10000px;
     height: 10px;
 }
+
+
+
+/* s */
+
+/* canvas{
+    margin: auto;
+    display: block;
+} */
+
