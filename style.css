@@ -1,7 +1,8 @@
 body{
     justify-content: space-around;
     color: black;
-    background-image: url('BG.jpeg')
+    background-image: url('BG.jpeg');
+    width: 100px;
 }
 
 img{
@@ -11,7 +12,7 @@ img{
 }
 .omg{
     opacity: 0;
-    width: 10000px;
+    width: 100px;
     height: 10px;
 }
 

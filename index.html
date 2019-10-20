@@ -16,7 +16,7 @@
         </div>
     </header>
     <main>
-        <canvas ontouchmove="Touchy(event)" id="canvas" width="350" height="500"></canvas>
+        <canvas ontouchmove="myFunction(event)" id="canvas" width="350" height="500"></canvas>
         
         <img class="omg" id="photo" src="doodler_small.png">
         <img class="omg" id="photo_two" src="platform.png">
@@ -87,7 +87,7 @@
         }
 
         var mouse = {
-                x: 250 ,
+                x: width / 2 ,
                 y: 300
         }
 
@@ -120,6 +120,13 @@
             ctx.fillText("Score: " + score, 10, 13);
         };
 
+        function myFunction(event) {
+            ball.x = event.touches[0].clientX;
+            // var y = event.touches[0].clientY;
+            console.log(x);
+            
+        }
+        
         var timeoutId = function () {
             if (proccess) {
                 setTimeout(gameLoop, 16);
@@ -202,7 +209,7 @@
         Ball.prototype.move = function () {
             this.gravity += this.gravitySpeed;
             this.y += this.speedY + this.gravitySpeed;
-            this.x = mouse.x;
+            // this.x = mouse.x;
 
             if (this.y - 20 > height) {
                 // this.speedY = -this.
@@ -313,11 +320,11 @@
 
         function gameLoop() {
             ctx.clearRect(0, 0, width, height);
-            ball.move();
             blocks.forEach(function (e) {
                 e.move();
                 e.draw();
             });
+            ball.move();
             ball.draw();
             drawBorder();
             drawScore();
