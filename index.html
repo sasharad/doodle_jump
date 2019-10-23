@@ -52,7 +52,7 @@
 
         var score = 0;
 
-        var ammountBlock = 10
+        var ammountBlock = 10;
 
         var blockUp = false;
         var ballStartPosition;
@@ -208,7 +208,7 @@
                     blocks[i].sizeX = 500;
                     blocks[i].sizeY = 50;    
                 }
-                ammountBlock = 20;
+                // ammountBlock = 20;
                 
                 canvas.width = 1000;
                 innerWidth = canvas.width;
@@ -219,6 +219,8 @@
             if (bd_width < 900) {
                 diffScreen = 450;
                 trans_flag = false;
+                ammountBlock = 7;
+
             }
         }
 
