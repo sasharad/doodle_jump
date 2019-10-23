@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="innerWidth=device-innerWidth, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link href="style.css" rel="stylesheet">
     <title>Document</title>
@@ -16,7 +16,7 @@
         </div>
     </header>
     <main>
-        <canvas ontouchmove="myFunction(event)" id="canvas" width="350" height="500"></canvas>
+        <canvas ontouchmove="myFunction(event)"  height="500"></canvas>
         
         <img class="omg" id="photo" src="doodler_small.png">
         <img class="omg" id="photo_two" src="platform.png">
@@ -32,10 +32,13 @@
     <script src="https://code.jquery.com/jquery-2.1.0.js"></script>
 
     <script>
-        var canvas = document.getElementById("canvas");
+        const canvas = document.querySelector('canvas');
+        // var canvas = document.getElementById("canvas");
+        var bd_width = window.innerWidth;
+        var bd_height = window.innerHeight;
         var ctx = canvas.getContext("2d");
-        var width = canvas.width;
-        var height = canvas.height;
+        var innerWidth = canvas.width;
+        // var innerHeight = canvas.height;
         var img = document.getElementById("photo");
         var img_two = document.getElementById("photo_two");
         var toper = document.getElementById("top");
@@ -43,19 +46,36 @@
 
         const colors = ['#2185C5', '#7ECEFD', '#FF7F66']
 
-        var proccess = true
+        var proccess = true;
+
+        var trans_flag = true;
 
         var score = 0;
 
+        var ammountBlock = 10
+
         var blockUp = false;
         var ballStartPosition;
-
+        
         var flag = false;
         var flagX = false;
 
-        var bottom = height;
-        var lucky = height;
+        var diffScreen = 100;
 
+        // canvas.width = innerWidth;
+        canvas.height = innerHeight;
+        
+        // var bottom = innerHeight;
+        // var lucky = innerHeight;
+        
+        addEventListener('resize', () => {
+            // canvas.innerWidth = innerWidth;
+            canvas.innerHeight = innerHeight - diffScreen;
+            // init()
+        })       
+
+        // innerWidth = 40;
+        
         var blockNum = 0;
 
         var direction = 0;
@@ -68,33 +88,38 @@
 
         var Ball = function () {
             this.x = 250;
-            this.y = 350;
+            this.y = innerHeight - 100;
             this.speedX = 0;
             this.speedY = -4;
             this.radius = 40;
             this.gravity = 1;
             this.gravitySpeed = 0;
             this.collisionPoint = 0;
+            this.sizeX = 100;
+            this.sizeY = 100;
         }
 
         var Block = function (x, y) {
             this.x = x;
             this.y = y;
-            this.width = 65;
-            this.height = 10;
+            this.innerWidth = 65;
+            this.innerHeight = 10;
             this.speedX = 0;
             this.speedY = 0;
+            this.sizeX = 100;
+            this.sizeY = 10;
         }
 
         var mouse = {
-                x: width / 2 ,
+                x: innerWidth / 2 ,
                 y: 300
         }
 
         addEventListener('mousemove', event => {
-            mouse.x = event.clientX
-            mouse.y = event.clientY
+            mouse.x = event.clientX;
+            mouse.y = event.clientY;
         })
+
         var circle = function (x, y, radius, filin) {
             ctx.beginPath();
             ctx.arc(x, y, radius, 0, Math.PI * 2, false);
@@ -107,9 +132,9 @@
 
         var drawBorder = function () {
             ctx.fillStyle = "Black";
-            // ctx.fillRect(0, height -5, width, height);
+            // ctx.fillRect(0, innerHeight -5, innerWidth, innerHeight);
             ctx.drawImage(toper, 0, 0, 350, 30);
-            ctx.drawImage(toper, 0, height - 13);
+            ctx.drawImage(toper, 0, innerHeight - 13);
         }
 
         var drawScore = function () {
@@ -123,8 +148,6 @@
         function myFunction(event) {
             ball.x = event.touches[0].clientX;
             // var y = event.touches[0].clientY;
-            console.log(x);
-            
         }
         
         var timeoutId = function () {
@@ -153,12 +176,12 @@
                 ctx.fillStyle = "Red";
                 ctx.textAllign = "center";
                 ctx.textBaseLine = "middle";
-                ctx.fillText("Game Over: " + score, 80, height / 2);
+                ctx.fillText("Game Over: " + score, 80, innerHeight / 2);
         }
 
         function collision() {
             for (let k = 0; k < blocks.length; k++) {
-                for (var i = 0; i < blocks[0].width; i++) {
+                for (var i = 0; i < blocks[0].innerWidth; i++) {
                     if (distance(blocks[k].x + i, blocks[k].y, ball.x, ball.y + ball.radius) < 3 && ball.speedY > 0) {
                         console.log("ks");
                         ball.speedY = -5;
@@ -172,14 +195,36 @@
             }
         }
 
-        function Touchy(event) {
-            ball.x = event.touches[0].clientX;
-        }
+        function transform() {
+            if (bd_width > 1500){
 
+                ball.radius = 60;
+                ball.sizeX = 170;
+                ball.sizeY = 170;
+
+                for (let i = 0; i < blocks.length; i++) {
+                    blocks[i].innerWidth = 200;
+                    blocks[i].innerHeight = 20;
+                    blocks[i].sizeX = 500;
+                    blocks[i].sizeY = 50;    
+                }
+                ammountBlock = 20;
+                
+                canvas.width = 1000;
+                innerWidth = canvas.width;
+                
+                
+                // innerWidth = 100;
+            }
+            if (bd_width < 900) {
+                diffScreen = 450;
+                trans_flag = false;
+            }
+        }
 
         function collisiontwo() {
             for (let k = 0; k < blocks.length; k++) {
-                if (ball.x > blocks[k].x && ball.x < blocks[k].x + blocks[k].width && ball.y > blocks[k].y && ball.y < blocks[k].y + 20 && ball.speedY > 4){
+                if (ball.x > blocks[k].x && ball.x < blocks[k].x + blocks[k].innerWidth && ball.y > blocks[k].y && ball.y < blocks[k].y + 20 && ball.speedY > 4){
                     ball.speedY = 0;
                     ball.speedY = -5;
                     flag = false;
@@ -197,21 +242,23 @@
         Ball.prototype.draw = function () {
             // ctx.fillStyle = "blue";
             // circle(this.x, this.y, this.radius, true);
-            ctx.drawImage(img, this.x - this.radius, this.y - this.radius);
+            ctx.drawImage(img, this.x - this.radius, this.y - this.radius, this.sizeX, this.sizeY);
         }
 
         Block.prototype.draw = function () {
             // ctx.fillStyle = "Black";
-            // ctx.fillRect(this.x, this.y, this.width, this.height);
-            ctx.drawImage(img_two, this.x - 20, this.y + 15);
+            // ctx.fillRect(this.x, this.y, this.innerWidth, this.innerHeight);
+            ctx.drawImage(img_two, this.x - 20, this.y + 15,  this.sizeX, this.sizeY);
         }
 
         Ball.prototype.move = function () {
             this.gravity += this.gravitySpeed;
             this.y += this.speedY + this.gravitySpeed;
-            // this.x = mouse.x;
+            if (trans_flag === true ) {
+                this.x = mouse.x;
+            }
 
-            if (this.y - 20 > height) {
+            if (this.y - 20 > innerHeight) {
                 // this.speedY = -this.
                 gameOver()
             }
@@ -224,18 +271,18 @@
 
             if (flag === true) {
                 this.speedY += 0.3;
-                if (this.y < 300) {
+                if (this.y < innerHeight - 200) {
                     this.speedY += 1;                
                 }
                 // this.speedY += 2;
             }
 
-            if (this.y < 400){
+            if (this.y < innerHeight - 150){
                 // this.speedY = 5                
                 flag = true
             }
-            if (this.x + 10 > width)
-                this.x = width - 10
+            if (this.x + 10 > innerWidth)
+                this.x = innerWidth - 10
 
             if (this.x - 10 < 0)
                 this.x = 10 
@@ -262,12 +309,12 @@
             this.y += this.speedY;
             this.x += this.speedX;
 
-            if (this.y > height - 10) {
-                this.x = randomIntFromRange(0, width - this.width)
+            if (this.y > innerHeight - 10) {
+                this.x = randomIntFromRange(0, innerWidth - this.innerWidth)
                 for (let j = 0; j < blocks.length; j++) {
                     if(this.y < 0){
                         if (this.x + 30 > blocks[j].x || this.x - 30 < blocks[j].x) {
-                            this.x = randomIntFromRange(0, width - this.width);
+                            this.x = randomIntFromRange(0, innerWidth - this.innerWidth);
 
                             j = -1
                         }
@@ -276,7 +323,7 @@
                 this.y = -10;
             }
 
-            if (blocks[blockNum].y > 450 && blockUp === true){
+            if (blocks[blockNum].y > innerHeight - 50 && blockUp === true){
                 // ball.speedY = -5;
                 flag = false;
                 blockUp = false;
@@ -297,15 +344,15 @@
 
         function init() {
 
-            for (let i = 0; i < 10; i++) {
-                var x = randomIntFromRange(0, width - 100);
-                var y = randomIntFromRange(0, height - 30);
+            for (let i = 0; i < ammountBlock; i++) {
+                var x = randomIntFromRange(0, innerWidth - 100);
+                var y = randomIntFromRange(0, innerHeight - 30);
 
                 if (i !== 0) {
                     for (var j = 0; j < blocks.length; j++) {
                         if (distance(x, y, blocks[j].x, blocks[j].y || distance(x, y, blocks[j].x + 100, blocks[j].y)) < 100) {
-                            x = randomIntFromRange(0, width - 100);
-                            y = randomIntFromRange(0, height - 20)
+                            x = randomIntFromRange(0, innerWidth - 100);
+                            y = randomIntFromRange(0, innerHeight - 20)
 
                             j = -1
                         }
@@ -319,7 +366,7 @@
 
 
         function gameLoop() {
-            ctx.clearRect(0, 0, width, height);
+            ctx.clearRect(0, 0, innerWidth, innerHeight);
             blocks.forEach(function (e) {
                 e.move();
                 e.draw();
@@ -331,6 +378,7 @@
             timeoutId();
         }
         // requestAnimationFrame(gameLoop)
+        transform();
         init()
         gameLoop()
 
