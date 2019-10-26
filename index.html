@@ -102,13 +102,15 @@
         var Block = function (x, y) {
             this.x = x;
             this.y = y;
-            this.innerWidth = 65;
+            this.innerWidth = 100;
             this.innerHeight = 10;
             this.speedX = 0;
             this.speedY = 0;
             this.sizeX = 100;
             this.sizeY = 10;
         }
+
+        var blockWidth = 100
 
         var mouse = {
                 x: innerWidth / 2 ,
@@ -133,8 +135,8 @@
         var drawBorder = function () {
             ctx.fillStyle = "Black";
             // ctx.fillRect(0, innerHeight -5, innerWidth, innerHeight);
-            ctx.drawImage(toper, 0, 0, 350, 30);
-            ctx.drawImage(toper, 0, innerHeight - 13);
+            ctx.drawImage(toper, 0, 0, innerWidth, 30);
+            ctx.drawImage(toper, 0, innerHeight - 13, innerWidth, 30);
         }
 
         var drawScore = function () {
@@ -172,7 +174,7 @@
 
         var gameOver = function () {
                 proccess = false;
-                ctx.font = "20px Courier";
+                ctx.font = "40px Courier";
                 ctx.fillStyle = "Red";
                 ctx.textAllign = "center";
                 ctx.textBaseLine = "middle";
@@ -198,20 +200,28 @@
         function transform() {
             if (bd_width > 1500){
 
-                ball.radius = 60;
-                ball.sizeX = 170;
-                ball.sizeY = 170;
+                blockWidth = 300
+
+                ball.radius = 180;
+                ball.sizeX = 300;
+                ball.sizeY = 300;
 
                 for (let i = 0; i < blocks.length; i++) {
-                    blocks[i].innerWidth = 200;
-                    blocks[i].innerHeight = 20;
-                    blocks[i].sizeX = 500;
-                    blocks[i].sizeY = 50;    
+                    console.log("ks");
+                    blocks[i].innerWidth = 300;
+                    blocks[i].innerHeight = 30;
+                    blocks[i].sizeX = 300;
+                    blocks[i].sizeY = 30;    
+                    
                 }
-                // ammountBlock = 20;
+                ammountBlock = 12;
                 
-                canvas.width = 1000;
+                canvas.width = 800;
                 innerWidth = canvas.width;
+
+                // canvas.height = 1000;
+                // innerHeight = canvas.height;
+
                 
                 
                 // innerWidth = 100;
@@ -260,7 +270,7 @@
                 this.x = mouse.x;
             }
 
-            if (this.y - 20 > innerHeight) {
+            if (this.y - this.radius - 30 > innerHeight) {
                 // this.speedY = -this.
                 gameOver()
             }
@@ -279,7 +289,7 @@
                 // this.speedY += 2;
             }
 
-            if (this.y < innerHeight - 150){
+            if (this.y < innerHeight - innerHeight / 4){
                 // this.speedY = 5                
                 flag = true
             }
@@ -345,15 +355,16 @@
         var blocks = [];
 
         function init() {
+            transform();
 
             for (let i = 0; i < ammountBlock; i++) {
-                var x = randomIntFromRange(0, innerWidth - 100);
+                var x = randomIntFromRange(0, innerWidth - blockWidth);
                 var y = randomIntFromRange(0, innerHeight - 30);
 
                 if (i !== 0) {
                     for (var j = 0; j < blocks.length; j++) {
                         if (distance(x, y, blocks[j].x, blocks[j].y || distance(x, y, blocks[j].x + 100, blocks[j].y)) < 100) {
-                            x = randomIntFromRange(0, innerWidth - 100);
+                            x = randomIntFromRange(0, innerWidth - blockWidth);
                             y = randomIntFromRange(0, innerHeight - 20)
 
                             j = -1
@@ -362,10 +373,11 @@
                 }
                 blocks.push(new Block(x, y));
             }
+        transform();
+
         }
 
         ball = new Ball();
-
 
         function gameLoop() {
             ctx.clearRect(0, 0, innerWidth, innerHeight);
@@ -380,7 +392,6 @@
             timeoutId();
         }
         // requestAnimationFrame(gameLoop)
-        transform();
         init()
         gameLoop()
 
